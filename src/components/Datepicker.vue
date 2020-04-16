@@ -55,6 +55,31 @@
       <slot name="beforeCalendarHeader" slot="beforeCalendarHeader"></slot>
     </picker-day>
 
+    <!-- Week View -->
+    <picker-week
+      v-if="allowedToShowView('week')"
+      :pageDate="pageDate"
+      :selectedDate="selectedDate"
+      :showWeekView="showWeekView"
+      :fullMonthName="fullMonthName"
+      :allowedToShowView="allowedToShowView"
+      :disabledDates="disabledDates"
+      :highlighted="highlighted"
+      :calendarClass="calendarClass"
+      :calendarStyle="calendarStyle"
+      :translation="translation"
+      :pageTimestamp="pageTimestamp"
+      :isRtl="isRtl"
+      :mondayFirst="mondayFirst"
+      :dayCellContent="dayCellContent"
+      :use-utc="useUtc"
+      @changedMonth="handleChangedMonthFromDayPicker"
+      @selectDate="selectDate"
+      @showMonthCalendar="showMonthCalendar"
+      @selectedDisabled="selectDisabledDate">
+      <slot name="beforeCalendarHeader" slot="beforeCalendarHeader"></slot>
+    </picker-week>
+
     <!-- Month View -->
     <picker-month
       v-if="allowedToShowView('month')"
@@ -99,13 +124,15 @@ import DateInput from './DateInput.vue'
 import PickerDay from './PickerDay.vue'
 import PickerMonth from './PickerMonth.vue'
 import PickerYear from './PickerYear.vue'
+import PickerWeek from './PickerWeek.vue'
 import utils, { makeDateUtils } from '../utils/DateUtils'
 export default {
   components: {
     DateInput,
     PickerDay,
     PickerMonth,
-    PickerYear
+    PickerYear,
+    PickerWeek
   },
   props: {
     value: {
@@ -176,6 +203,7 @@ export default {
        * {Boolean}
        */
       showDayView: false,
+      showWeekView: false,
       showMonthView: false,
       showYearView: false,
       /*
@@ -219,7 +247,7 @@ export default {
       }
     },
     isOpen () {
-      return this.showDayView || this.showMonthView || this.showYearView
+      return this.showDayView || this.showWeekView || this.showMonthView || this.showYearView
     },
     isInline () {
       return !!this.inline
@@ -268,6 +296,9 @@ export default {
         case 'month':
           this.showMonthCalendar()
           break
+        case 'week':
+          this.showWeekCalendar()
+          break
         default:
           this.showDayCalendar()
           break
@@ -279,7 +310,7 @@ export default {
      * @return {Boolean}
      */
     allowedToShowView (view) {
-      const views = ['day', 'month', 'year']
+      const views = this.minimumView === 'week' ? ['week', 'month', 'year'] : ['day', 'month', 'year']
       const minimumViewIndex = views.indexOf(this.minimumView)
       const maximumViewIndex = views.indexOf(this.maximumView)
       const viewIndex = views.indexOf(view)
@@ -296,6 +327,14 @@ export default {
       }
       this.close()
       this.showDayView = true
+      return true
+    },
+    showWeekCalendar () {
+      if (!this.allowedToShowView('week')) {
+        return false
+      }
+      this.close()
+      this.showWeekView = true
       return true
     },
     /**
@@ -368,6 +407,10 @@ export default {
         this.setPageDate(date)
         this.$emit('changedMonth', month)
         this.showDayCalendar()
+      } else if (this.allowedToShowView('week')) {
+        this.setPageDate(date)
+        this.$emit('changedMonth', month)
+        this.showWeekCalendar()
       } else {
         this.selectDate(month)
       }
@@ -433,7 +476,7 @@ export default {
      * @param {Boolean} emitEvent - emit close event
      */
     close (emitEvent) {
-      this.showDayView = this.showMonthView = this.showYearView = false
+      this.showDayView = this.showWeekView = this.showMonthView = this.showYearView = false
       if (!this.isInline) {
         if (emitEvent) {
           this.$emit('closed')
