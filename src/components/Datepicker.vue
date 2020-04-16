@@ -1,6 +1,6 @@
 <template>
   <div class="vdp-datepicker" :class="[wrapperClass, isRtl ? 'rtl' : '']">
-    <date-input
+    <date-input v-if="showInput"
       :selectedDate="selectedDate"
       :resetTypedDate="resetTypedDate"
       :format="format"
@@ -180,6 +180,10 @@ export default {
     maximumView: {
       type: String,
       default: 'year'
+    },
+    showInput: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
