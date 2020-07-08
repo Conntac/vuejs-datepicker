@@ -72,24 +72,8 @@ function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
 }
 
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-}
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
-}
-
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
-}
-
-function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
 }
 
 function _iterableToArrayLimit(arr, i) {
@@ -116,10 +100,6 @@ function _iterableToArrayLimit(arr, i) {
   }
 
   return _arr;
-}
-
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
 }
 
 function _nonIterableRest() {
@@ -1926,14 +1906,17 @@ var script$4 = {
       var days = []; // set up a new date object to the beginning of the current 'page'
 
       var dObj = this.useUtc ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)) : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes());
-      var daysInMonth = this.utils.daysInMonth(this.utils.getFullYear(dObj), this.utils.getMonth(dObj));
+      var daysInMonth = this.utils.daysInMonth(this.utils.getFullYear(dObj), this.utils.getMonth(dObj)) + this.blankDays; // Fill in days of the next month to complete the last week
 
-      for (var i = 0; i < daysInMonth; i++) {
+      var fillEnd = (7 - daysInMonth % 7) % 7;
+      this.utils.setDate(dObj, this.utils.getDate(dObj) - this.blankDays);
+
+      for (var i = 0; i < daysInMonth + fillEnd; i++) {
         days.push({
           date: this.utils.getDate(dObj),
           timestamp: dObj.getTime(),
           isSelected: this.isSelectedDate(dObj),
-          isDisabled: this.isDisabledDate(dObj),
+          isDisabled: this.isDisabledDate(dObj) || i < this.blankDays || i > daysInMonth,
           isHighlighted: this.isHighlightedDate(dObj),
           isHighlightStart: this.isHighlightStart(dObj),
           isHighlightEnd: this.isHighlightEnd(dObj),
@@ -1947,14 +1930,11 @@ var script$4 = {
 
       return days;
     },
-    combinedDays: function combinedDays() {
-      return [].concat(_toConsumableArray(new Array(this.blankDays)), _toConsumableArray(this.days));
-    },
-    combinedDaysInWeeks: function combinedDaysInWeeks() {
+    daysInWeeks: function daysInWeeks() {
       var weeks = [];
-      var days = this.combinedDays;
+      var days = this.days;
 
-      for (var i = 0; i < days.length - 7; i += 7) {
+      for (var i = 0; i < days.length; i += 7) {
         weeks.push(days.slice(i, i + 7));
       }
 
@@ -2343,7 +2323,7 @@ var __vue_render__$4 = function() {
             )
           }),
           _vm._v(" "),
-          _vm._l(_vm.combinedDaysInWeeks, function(week) {
+          _vm._l(_vm.daysInWeeks, function(week) {
             return _c(
               "div",
               {
@@ -2368,7 +2348,11 @@ var __vue_render__$4 = function() {
                           staticClass: "cell week-day",
                           class: [
                             _vm.dayClasses(day),
-                            { disabled: _vm.allDaysInWeekDisabled(week) }
+                            {
+                              disabled:
+                                _vm.allDaysInWeekDisabled(week) ||
+                                day.isDisabled
+                            }
                           ],
                           domProps: {
                             innerHTML: _vm._s(_vm.dayCellContent(day))

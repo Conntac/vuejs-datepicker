@@ -14,12 +14,12 @@
     </header>
     <div :class="isRtl ? 'flex-rtl' : ''">
       <span class="cell day-header" v-for="d in daysOfWeek" :key="d.timestamp">{{ d }}</span>
-        <div v-for="week in combinedDaysInWeeks" class="week" :class="{ disabled: allDaysInWeekDisabled(week), selected: isWeekSelected(week)}" @click="selectWeek(week)">
+        <div v-for="week in daysInWeeks" class="week" :class="{ disabled: allDaysInWeekDisabled(week), selected: isWeekSelected(week)}" @click="selectWeek(week)">
           <template v-for="day in week">
             <span v-if="day === undefined" class="cell day blank" :key="day"></span>
             <span v-else class="cell week-day"
               :key="day.timestamp"
-              :class="[dayClasses(day), { disabled: allDaysInWeekDisabled(week)}]"
+              :class="[dayClasses(day), { disabled: allDaysInWeekDisabled(week) || day.isDisabled }]"
               v-html="dayCellContent(day)"></span>
           </template>
         </div>
@@ -93,13 +93,19 @@ export default {
       let dObj = this.useUtc
         ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
         : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
-      let daysInMonth = this.utils.daysInMonth(this.utils.getFullYear(dObj), this.utils.getMonth(dObj))
-      for (let i = 0; i < daysInMonth; i++) {
+      let daysInMonth = this.utils.daysInMonth(this.utils.getFullYear(dObj), this.utils.getMonth(dObj)) + this.blankDays
+
+      // Fill in days of the next month to complete the last week
+      const fillEnd = (7 - (daysInMonth % 7)) % 7
+
+      this.utils.setDate(dObj, this.utils.getDate(dObj) - this.blankDays)
+
+      for (let i = 0; i < daysInMonth + fillEnd; i++) {
         days.push({
           date: this.utils.getDate(dObj),
           timestamp: dObj.getTime(),
           isSelected: this.isSelectedDate(dObj),
-          isDisabled: this.isDisabledDate(dObj),
+          isDisabled: this.isDisabledDate(dObj) || i < this.blankDays || i > daysInMonth,
           isHighlighted: this.isHighlightedDate(dObj),
           isHighlightStart: this.isHighlightStart(dObj),
           isHighlightEnd: this.isHighlightEnd(dObj),
@@ -112,13 +118,10 @@ export default {
       }
       return days
     },
-    combinedDays () {
-      return [...new Array(this.blankDays), ...this.days]
-    },
-    combinedDaysInWeeks () {
+    daysInWeeks () {
       let weeks = []
-      let days = this.combinedDays
-      for (let i = 0; i < days.length - 7; i += 7) {
+      let days = this.days
+      for (let i = 0; i < days.length; i += 7) {
         weeks.push(days.slice(i, i + 7))
       }
       return weeks
