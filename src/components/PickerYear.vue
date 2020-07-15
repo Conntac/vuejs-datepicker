@@ -5,12 +5,12 @@
       <span
         @click="isRtl ? nextDecade() : previousDecade()"
         class="prev"
-        :class="{'disabled': isLeftNavDisabled}">&lt;</span>
+        :class="{'disabled': isLeftNavDisabled}" v-html="prevButton"></span>
       <span>{{ getPageDecade }}</span>
       <span
         @click="isRtl ? previousDecade() : nextDecade()"
         class="next"
-        :class="{'disabled': isRightNavDisabled}">&gt;</span>
+        :class="{'disabled': isRightNavDisabled}" v-html="nextButton"></span>
     </header>
     <span
       class="cell year"
@@ -35,7 +35,15 @@ export default {
     translation: Object,
     isRtl: Boolean,
     allowedToShowView: Function,
-    useUtc: Boolean
+    useUtc: Boolean,
+    prevButton: {
+      type: String,
+      default: '&lt;'
+    },
+    nextButton: {
+      type: String,
+      default: '&gt;'
+    }
   },
   computed: {
     years () {

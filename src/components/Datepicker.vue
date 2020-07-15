@@ -48,6 +48,8 @@
       :mondayFirst="mondayFirst"
       :dayCellContent="dayCellContent"
       :use-utc="useUtc"
+      :prev-button="prevButton"
+      :next-button="nextButton"
       @changedMonth="handleChangedMonthFromDayPicker"
       @selectDate="selectDate"
       @showMonthCalendar="showMonthCalendar"
@@ -73,6 +75,8 @@
       :mondayFirst="mondayFirst"
       :dayCellContent="dayCellContent"
       :use-utc="useUtc"
+      :prev-button="prevButton"
+      :next-button="nextButton"
       @changedMonth="handleChangedMonthFromDayPicker"
       @selectDate="selectDate"
       @showMonthCalendar="showMonthCalendar"
@@ -93,6 +97,8 @@
       :translation="translation"
       :isRtl="isRtl"
       :use-utc="useUtc"
+      :prev-button="prevButton"
+      :next-button="nextButton"
       @selectMonth="selectMonth"
       @showYearCalendar="showYearCalendar"
       @changedYear="setPageDate">
@@ -112,6 +118,8 @@
       :translation="translation"
       :isRtl="isRtl"
       :use-utc="useUtc"
+      :prev-button="prevButton"
+      :next-button="nextButton"
       @selectYear="selectYear"
       @changedDecade="setPageDate">
       <slot name="beforeCalendarHeader" slot="beforeCalendarHeader"></slot>
@@ -184,6 +192,14 @@ export default {
     showInput: {
       type: Boolean,
       default: true
+    },
+    prevButton: {
+      type: String,
+      default: undefined
+    },
+    nextButton: {
+      type: String,
+      default: undefined
     }
   },
   data () {

@@ -5,12 +5,12 @@
       <span
         @click="isRtl ? nextYear() : previousYear()"
         class="prev"
-        :class="{'disabled': isLeftNavDisabled}">&lt;</span>
+        :class="{'disabled': isLeftNavDisabled}" v-html="prevButton"></span>
       <span class="month__year_btn" @click="showYearCalendar" :class="allowedToShowView('year') ? 'up' : ''">{{ pageYearName }}</span>
       <span
         @click="isRtl ? previousYear() : nextYear()"
         class="next"
-        :class="{'disabled': isRightNavDisabled}">&gt;</span>
+        :class="{'disabled': isRightNavDisabled}" v-html="nextButton"></span>
     </header>
     <span class="cell month"
       v-for="month in months"
@@ -33,7 +33,15 @@ export default {
     translation: Object,
     isRtl: Boolean,
     allowedToShowView: Function,
-    useUtc: Boolean
+    useUtc: Boolean,
+    prevButton: {
+      type: String,
+      default: '&lt;'
+    },
+    nextButton: {
+      type: String,
+      default: '&gt;'
+    }
   },
   data () {
     const constructedDateUtils = makeDateUtils(this.useUtc)
