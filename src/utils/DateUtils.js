@@ -171,6 +171,20 @@ const utils = {
   },
 
   /**
+   * Calculate the week number of a timestamp in the current year
+   * @param {Number} timestamp
+   * @return {Number}
+   */
+  weekNumber (timestamp) {
+    const beginOfCurrentYear = new Date(new Date(timestamp).getUTCFullYear(), 0, 1)
+
+    const millisecondsSinceBeginOfYear = timestamp - beginOfCurrentYear.getTime()
+    const weekInMilliseconds = 604800000 // 7 * 24 * 60 * 60 * 60 * 1000
+
+    return Math.floor(millisecondsSinceBeginOfYear / weekInMilliseconds) + 1
+  },
+
+  /**
    * Get nth suffix for date
    * @param {Number} day
    * @return {String}

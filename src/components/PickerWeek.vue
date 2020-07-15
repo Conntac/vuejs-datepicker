@@ -1,5 +1,5 @@
 <template>
-  <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showWeekView" :style="calendarStyle" @mousedown.prevent>
+  <div :class="[calendarClass, 'vdp-datepicker__calendar', 'vdp-datepicker__calendar__week']" v-show="showWeekView" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
     <header>
       <span
@@ -13,8 +13,10 @@
         :class="{'disabled': isRightNavDisabled}">&gt;</span>
     </header>
     <div :class="isRtl ? 'flex-rtl' : ''">
+      <span class="cell day-header calendar-week"></span>
       <span class="cell day-header" v-for="d in daysOfWeek" :key="d.timestamp">{{ d }}</span>
         <div v-for="week in daysInWeeks" class="week" :class="{ disabled: allDaysInWeekDisabled(week), selected: isWeekSelected(week)}" @click="selectWeek(week)">
+          <span class="cell calendar-week">{{ getWeekNumber(week[6].timestamp) }}</span>
           <template v-for="day in week">
             <span v-if="day === undefined" class="cell day blank" :key="day"></span>
             <span v-else class="cell week-day"
@@ -391,6 +393,9 @@ export default {
      */
     isDefined (prop) {
       return typeof prop !== 'undefined' && prop
+    },
+    getWeekNumber (date) {
+      return this.utils.weekNumber(date)
     }
   }
 }
