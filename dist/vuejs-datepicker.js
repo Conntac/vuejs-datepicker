@@ -1935,7 +1935,7 @@
             date: this.utils.getDate(dObj),
             timestamp: dObj.getTime(),
             isSelected: this.isSelectedDate(dObj),
-            isDisabled: this.isDisabledDate(dObj) || i < this.blankDays || i > daysInMonth,
+            isDisabled: this.isDisabledDate(dObj) || i < this.blankDays || i >= daysInMonth,
             isHighlighted: this.isHighlightedDate(dObj),
             isHighlightStart: this.isHighlightStart(dObj),
             isHighlightEnd: this.isHighlightEnd(dObj),
