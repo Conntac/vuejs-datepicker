@@ -38,7 +38,7 @@
       :showDayView="showDayView"
       :fullMonthName="fullMonthName"
       :allowedToShowView="allowedToShowView"
-      :disabledDates="disabledDates"
+      :disabledDates="expandedDisabledDates"
       :highlighted="highlighted"
       :calendarClass="calendarClass"
       :calendarStyle="calendarStyle"
@@ -65,7 +65,7 @@
       :showWeekView="showWeekView"
       :fullMonthName="fullMonthName"
       :allowedToShowView="allowedToShowView"
-      :disabledDates="disabledDates"
+      :disabledDates="expandedDisabledDates"
       :highlighted="highlighted"
       :calendarClass="calendarClass"
       :calendarStyle="calendarStyle"
@@ -91,7 +91,7 @@
       :selectedDate="selectedDate"
       :showMonthView="showMonthView"
       :allowedToShowView="allowedToShowView"
-      :disabledDates="disabledDates"
+      :disabledDates="expandedDisabledDates"
       :calendarClass="calendarClass"
       :calendarStyle="calendarStyle"
       :translation="translation"
@@ -112,7 +112,7 @@
       :selectedDate="selectedDate"
       :showYearView="showYearView"
       :allowedToShowView="allowedToShowView"
-      :disabledDates="disabledDates"
+      :disabledDates="expandedDisabledDates"
       :calendarClass="calendarClass"
       :calendarStyle="calendarStyle"
       :translation="translation"
@@ -274,6 +274,33 @@ export default {
     },
     isRtl () {
       return this.translation.rtl === true
+    },
+    /**
+     * The decision if a date is disabled takes hours into account,
+     * which does not make a lot of sense the user can only choose days
+     *
+     * In order to avoid problems, the time of the to-Date is set to 00:00:00:000 and
+     * the time of the from-Date is set to 23:59:59:999
+     */
+    expandedDisabledDates () {
+      if (!this.disabledDates) return undefined
+
+      let toDate
+      let fromDate
+
+      if (this.disabledDates.to) {
+        toDate = new Date(this.disabledDates.to)
+        toDate.setHours(0, 0, 0, 0)
+      }
+      if (this.disabledDates.from) {
+        fromDate = new Date(this.disabledDates.from)
+        fromDate.setHours(23, 59, 59, 999)
+      }
+
+      return {
+        from: fromDate,
+        to: toDate
+      }
     }
   },
   methods: {
