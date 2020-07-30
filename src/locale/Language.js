@@ -1,9 +1,10 @@
 export default class Language {
-  constructor (language, months, monthsAbbr, days) {
+  constructor (language, months, monthsAbbr, days, today) {
     this.language = language
     this.months = months
     this.monthsAbbr = monthsAbbr
     this.days = days
+    this.today = today
     this.rtl = false
     this.ymd = false
     this.yearSuffix = ''

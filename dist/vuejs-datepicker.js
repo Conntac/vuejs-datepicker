@@ -115,13 +115,14 @@
   var Language =
   /*#__PURE__*/
   function () {
-    function Language(language, months, monthsAbbr, days) {
+    function Language(language, months, monthsAbbr, days, today) {
       _classCallCheck(this, Language);
 
       this.language = language;
       this.months = months;
       this.monthsAbbr = monthsAbbr;
       this.days = days;
+      this.today = today;
       this.rtl = false;
       this.ymd = false;
       this.yearSuffix = '';
@@ -180,7 +181,7 @@
     return Language;
   }(); // eslint-disable-next-line
 
-  var en = new Language('English', ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']) // eslint-disable-next-line
+  var en = new Language('English', ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], 'Today') // eslint-disable-next-line
   ;
 
   var utils = {
@@ -922,7 +923,8 @@
        * Translation of 'today'
        * @return {String}
        */
-      todayText: function todayText() {// return this.translation.
+      todayText: function todayText() {
+        return this.translation.today;
       }
     },
     methods: {
@@ -1155,6 +1157,12 @@
        */
       isDefined: function isDefined(prop) {
         return typeof prop !== 'undefined' && prop;
+      },
+      selectToday: function selectToday() {
+        this.selectDate({
+          timestamp: Math.max(Math.min(new Date().getTime(), this.disabledDates.from.getTime()), this.disabledDates.to.getTime()),
+          isDisabled: false
+        });
       }
     } // eslint-disable-next-line
 
@@ -1267,11 +1275,22 @@
           2
         ),
         _vm._v(" "),
-        _c("div", { staticClass: "today-button" }, [
-          _c("span", { staticStyle: { "text-align": "center" } }, [
-            _vm._v(_vm._s(_vm.todayText))
-          ])
-        ])
+        _c(
+          "div",
+          {
+            staticClass: "today-button",
+            on: {
+              click: function($event) {
+                return _vm.selectToday()
+              }
+            }
+          },
+          [
+            _c("span", { staticStyle: { "text-align": "center" } }, [
+              _vm._v(_vm._s(_vm.todayText))
+            ])
+          ]
+        )
       ],
       2
     )

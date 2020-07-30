@@ -24,6 +24,9 @@
           v-html="dayCellContent(day)"
           @click="selectDate(day)"></span>
     </div>
+    <div class="today-button" @click="selectToday()">
+      <span style="text-align: center">{{ todayText }}</span>
+    </div>
   </div>
 </template>
 <script>
@@ -160,6 +163,13 @@ export default {
       return this.isRtl
         ? this.isPreviousMonthDisabled(this.pageTimestamp)
         : this.isNextMonthDisabled(this.pageTimestamp)
+    },
+    /**
+     * Translation of 'today'
+     * @return {String}
+     */
+    todayText () {
+      return this.translation.today
     }
   },
   methods: {
@@ -375,6 +385,11 @@ export default {
      */
     isDefined (prop) {
       return typeof prop !== 'undefined' && prop
+    },
+    selectToday () {
+      this.selectDate({timestamp: Math.max(Math.min(new Date().getTime(),
+          this.disabledDates.from.getTime()), this.disabledDates.to.getTime()),
+        isDisabled: false})
     }
   }
 }
